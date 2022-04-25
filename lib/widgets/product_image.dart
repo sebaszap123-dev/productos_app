@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:productos_app/ui/box_shadow.dart';
 
 class ProductImage extends StatelessWidget {
+  final String? url;
+
+  const ProductImage({Key? key, this.url}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -9,12 +14,20 @@ class ProductImage extends StatelessWidget {
         decoration: _boxDecoProductImage(),
         width: double.infinity,
         height: 400,
-        child: ClipRRect(
-          borderRadius: _borderRadiusImage(),
-          child: FadeInImage(
-            placeholder: AssetImage('assets/jar-loading.gif'),
-            image: NetworkImage('https://via.placeholder.com/400x300/green'),
-            fit: BoxFit.cover,
+        child: Opacity(
+          opacity: 0.9,
+          child: ClipRRect(
+            borderRadius: _borderRadiusImage(),
+            child: url == null
+                ? Image(
+                    image: AssetImage('assets/no-image.png'),
+                    fit: BoxFit.cover,
+                  )
+                : FadeInImage(
+                    placeholder: AssetImage('assets/jar-loading.gif'),
+                    image: NetworkImage(url!),
+                    fit: BoxFit.cover,
+                  ),
           ),
         ),
       ),
@@ -22,14 +35,10 @@ class ProductImage extends StatelessWidget {
   }
 
   BoxDecoration _boxDecoProductImage() => BoxDecoration(
-          color: Colors.indigo,
-          borderRadius: _borderRadiusImage(),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: Offset(0, 5))
-          ]);
+        color: Colors.black,
+        borderRadius: _borderRadiusImage(),
+        boxShadow: BoxShadowApp.boxShadowProduct,
+      );
 
   BorderRadius _borderRadiusImage() {
     return BorderRadius.only(
