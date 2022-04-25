@@ -6,6 +6,7 @@ import 'package:productos_app/ui/box_shadow.dart';
 import 'package:productos_app/ui/input_decorations.dart';
 import 'package:productos_app/widgets/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProductScreen extends StatelessWidget {
   @override
@@ -48,7 +49,9 @@ class _ProductsScreenBody extends StatelessWidget {
                     url: productService.selectedProduct.picture,
                   ),
                   _ArrowBack(),
-                  _Camera(),
+                  _Camera(
+                    provider: productService,
+                  ),
                 ],
               ),
               _ProductForm(),
@@ -58,11 +61,17 @@ class _ProductsScreenBody extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (!formProvider.isValidForm()) return;
-          await productService.saveOrCreateProduct(formProvider.product);
-        },
-        child: Icon(Icons.save_rounded),
+        onPressed: productService.isSaving
+            ? null
+            : () async {
+                if (!formProvider.isValidForm()) return;
+                final String? imageUrl = await productService.uploadImage();
+                if (imageUrl != null) formProvider.product.picture = imageUrl;
+                await productService.saveOrCreateProduct(formProvider.product);
+              },
+        child: productService.isSaving
+            ? CircularProgressIndicator()
+            : Icon(Icons.save_rounded),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
     );
@@ -141,13 +150,25 @@ class _ProductForm extends StatelessWidget {
 }
 
 class _Camera extends StatelessWidget {
+  final ProductsServices provider;
+
+  const _Camera({Key? key, required this.provider}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Positioned(
       top: 30,
       right: 20,
       child: IconButton(
-        onPressed: () {},
+        onPressed: () async {
+          final picker = ImagePicker();
+          final pickedFile = await picker.pickImage(
+              source: ImageSource.camera, imageQuality: 100);
+          if (pickedFile == null) {
+            print('No selecciono nada');
+            return;
+          }
+          provider.updateSelectedProductImage(pickedFile.path);
+        },
         icon: Icon(
           Icons.camera_alt_outlined,
           size: 40,

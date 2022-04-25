@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:productos_app/ui/box_shadow.dart';
 
@@ -17,18 +19,7 @@ class ProductImage extends StatelessWidget {
         child: Opacity(
           opacity: 0.9,
           child: ClipRRect(
-            borderRadius: _borderRadiusImage(),
-            child: url == null
-                ? Image(
-                    image: AssetImage('assets/no-image.png'),
-                    fit: BoxFit.cover,
-                  )
-                : FadeInImage(
-                    placeholder: AssetImage('assets/jar-loading.gif'),
-                    image: NetworkImage(url!),
-                    fit: BoxFit.cover,
-                  ),
-          ),
+              borderRadius: _borderRadiusImage(), child: getImage(url)),
         ),
       ),
     );
@@ -44,6 +35,27 @@ class ProductImage extends StatelessWidget {
     return BorderRadius.only(
       topLeft: Radius.circular(45),
       topRight: Radius.circular(45),
+    );
+  }
+
+  Widget getImage(String? picture) {
+    if (picture == null) {
+      return Image(
+        image: AssetImage('assets/no-image.png'),
+        fit: BoxFit.cover,
+      );
+    }
+    if (picture.startsWith('http')) {
+      return FadeInImage(
+        placeholder: AssetImage('assets/jar-loading.gif'),
+        image: NetworkImage(url!),
+        fit: BoxFit.cover,
+      );
+    }
+    return Image.file(
+      File(picture),
+      fit: BoxFit.cover,
+      
     );
   }
 }
