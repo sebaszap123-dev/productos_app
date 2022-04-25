@@ -13,6 +13,9 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(
           create: (BuildContext context) => ProductsServices(),
         ),
+        ChangeNotifierProvider(
+          create: (BuildContext context) => AuthService(),
+        ),
       ],
       child: MyApp(),
     );
@@ -25,12 +28,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Productos App',
-      initialRoute: 'home',
+      initialRoute: 'checkAuth',
       routes: {
+        'checkAuth': (_) => CheckAuthScreen(),
+        //
         'login': (_) => LoginScreen(),
+        'register': (_) => RegisterScreen(),
+        //
         'home': (_) => HomeScreen(),
         'product': (_) => ProductScreen(),
       },
+      scaffoldMessengerKey: NotificationsServices.messengerKey,
       theme: ThemeData.light().copyWith(
         scaffoldBackgroundColor: Colors.grey[300],
         appBarTheme: AppBarTheme(elevation: 0, color: Colors.indigo),

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:productos_app/providers/login_form_provider.dart';
 import 'package:productos_app/services/services.dart';
+import 'package:productos_app/utils/error_modal.dart';
 import 'package:provider/provider.dart';
 
 import 'package:productos_app/ui/input_decorations.dart';
 import 'package:productos_app/widgets/widgets.dart';
 
-class LoginScreen extends StatelessWidget {
+class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +20,8 @@ class LoginScreen extends StatelessWidget {
               child: Column(
             children: [
               SizedBox(height: 10),
-              Text('Login', style: Theme.of(context).textTheme.headline4),
+              Text('Crear cuenta',
+                  style: Theme.of(context).textTheme.headline4),
               SizedBox(height: 30),
               ChangeNotifierProvider(
                   create: (_) => LoginFormProvider(), child: _LoginForm())
@@ -27,8 +29,8 @@ class LoginScreen extends StatelessWidget {
           )),
           SizedBox(height: 50),
           ButtonByFernando(
-            route: 'register',
-            text: 'Crear una cuenta',
+            route: 'login',
+            text: '¿Ya tienes una cuenta? Ingresar',
           ),
           SizedBox(height: 50),
         ],
@@ -104,12 +106,12 @@ class _LoginForm extends StatelessWidget {
                         if (!loginForm.isValidForm()) return;
                         loginForm.isLoading = true;
                         // TODO: validar si el login es correcto
-                        final String? errorMessage = await authService.login(
-                            loginForm.email, loginForm.password);
+                        final String? errorMessage = await authService
+                            .createUser(loginForm.email, loginForm.password);
                         if (errorMessage == null) {
-                          Navigator.pushReplacementNamed(context, 'home');
+                          Navigator.pushReplacementNamed(context, 'login');
                         } else {
-                          // showErrorModal(context, errorMessage);
+                          // showErrorModal(context, errorMessage!);
                           NotificationsServices.showSnackBar(errorMessage);
                         }
                         loginForm.isLoading = false;
